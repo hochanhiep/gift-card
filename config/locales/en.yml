@@ -29,3 +29,7 @@
 
 en:
   hello: "Hello world"
+  errors:
+    invalid_credentials: Email or password is incorrect
+    unauthorized: Authentication required
+    forbidden: You are not allowed to do this

@@ -1,0 +1,21 @@
+class AuthController < ApplicationController
+  skip_before_action :authenticate_request!, only: :login
+
+  def login
+    user = User.authenticate_by(email: params[:email].to_s, password: params[:password].to_s)
+
+    if user.present? && user.active?
+      token = JwtService.issue(user)
+
+      render json: {
+        data: {
+          token: token.value,
+          expires_at: token.expires_at.iso8601,
+          user: { id: user.id, email: user.email, role: user.role }
+        }
+      }
+    else
+     render_error :unauthorized, code: :invalid_credentials
+    end
+  end
+end
