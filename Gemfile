@@ -59,6 +59,10 @@ group :development, :test do
   gem "rswag-specs"
 end
 
+group :development do
+  gem "annotaterb"
+end
+
 group :test do
   gem "factory_bot_rails"
 
