@@ -32,4 +32,6 @@ en:
   errors:
     invalid_credentials: Email or password is incorrect
     unauthorized: Authentication required
+    invalid_token: Invalid or expired token
     forbidden: You are not allowed to do this
+    parameter_missing: A required parameter is missing

@@ -22,7 +22,7 @@ RSpec.describe "Auth", type: :request do
         let(:credentials) { { email: "test@Example.com ", password: "Password123" } }
 
         run_test! do |response|
-          data = JSON.parse(response.body)["data"]
+          data = json["data"]
 
           expect(JwtService.decode(data["token"])["sub"]).to eq(user.id)
           expect(data["user"]["email"]).to eq("test@example.com")

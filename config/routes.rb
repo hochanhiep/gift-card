@@ -11,4 +11,8 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   post "auth/login", to: "auth#login"
+
+  namespace :admin do
+    resources :brands, only: %i[index create]
+  end
 end

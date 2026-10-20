@@ -4,6 +4,31 @@ info:
   title: API V1
   version: v1
 paths:
+  "/admin/brands":
+    get:
+      summary: List brands
+      tags:
+      - Brands
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Returns the second page when per_page is 1
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
   "/auth/login":
     post:
       summary: Log in and get a token
@@ -28,6 +53,12 @@ paths:
               required:
               - email
               - password
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 servers:
 - url: http://localhost:3000
   description: Local
