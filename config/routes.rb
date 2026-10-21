@@ -21,5 +21,9 @@ Rails.application.routes.draw do
     resources :products, only: %i[show update destroy] do
       patch :state, on: :member
     end
+
+    resources :clients, only: %i[index show create update] do
+      patch :state, on: :member
+    end
   end
 end

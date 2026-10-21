@@ -2,6 +2,7 @@ class User < ApplicationRecord
   has_secure_password
 
   enum :role, { admin: 0, client: 1 }
+  enum :state, { active: 0, inactive: 1 }, default: :active, validate: true
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
@@ -19,11 +20,11 @@ end
 # Table name: users
 #
 #  id              :bigint           not null, primary key
-#  active          :boolean          default(TRUE), not null
 #  email           :citext           not null
 #  password_digest :string           not null
 #  payout_rate     :decimal(5, 2)
 #  role            :integer          default("client"), not null
+#  state           :integer          default(0), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #

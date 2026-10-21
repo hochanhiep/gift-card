@@ -43,7 +43,7 @@ RSpec.describe "Auth", type: :request do
 
       response "401", "Rejects the login when the user is deactivated" do
         let(:credentials) { { email: "test@example.com", password: "Password123" } }
-        before { user.update!(active: false) }
+        before { user.update!(state: :inactive) }
 
         run_test!
       end

@@ -3,11 +3,11 @@
 # Table name: users
 #
 #  id              :bigint           not null, primary key
-#  active          :boolean          default(TRUE), not null
 #  email           :citext           not null
 #  password_digest :string           not null
 #  payout_rate     :decimal(5, 2)
 #  role            :integer          default("client"), not null
+#  state           :integer          default(0), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
@@ -21,7 +21,7 @@ FactoryBot.define do
     password    { "Password123" }
     role        { :client }
     payout_rate { 10 }
-    active      { true }
+    state       { :active }
 
     trait :client do
       role { :client }
@@ -33,7 +33,7 @@ FactoryBot.define do
     end
 
     trait :inactive do
-      active { false }
+      state { :inactive }
     end
   end
 end

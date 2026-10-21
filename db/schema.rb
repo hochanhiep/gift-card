@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_20_072404) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_21_032146) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -43,11 +43,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_20_072404) do
     t.citext "email", null: false
     t.string "password_digest", null: false
     t.integer "role", default: 1, null: false
-    t.boolean "active", default: true, null: false
     t.decimal "payout_rate", precision: 5, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "state", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.check_constraint "state = ANY (ARRAY[0, 1])", name: "users_state_valid"
   end
 
   add_foreign_key "products", "brands", on_delete: :restrict
