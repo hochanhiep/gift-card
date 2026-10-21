@@ -21,7 +21,7 @@ RSpec.describe "Admin brands", type: :request do
       end
 
       response "200", "Returns brands sorted by name" do
-        run_test! do |response|
+        run_test! do
           expect(json["data"].map { |brand| brand["name"] }).to eq([ "Highlands Coffee", "Starbucks" ])
           expect(json["data"].first.keys).to match_array(%w[id name state custom_fields created_at updated_at])
           expect(json.slice("page", "per_page", "total")).to eq("page" => 1, "per_page" => 20, "total" => 2)
@@ -32,7 +32,7 @@ RSpec.describe "Admin brands", type: :request do
         let(:page)     { 2 }
         let(:per_page) { 1 }
 
-        run_test! do |response|
+        run_test! do
           expect(json["data"].map { |brand| brand["name"] }).to eq([ "Starbucks" ])
           expect(json.slice("page", "per_page", "total")).to eq("page" => 2, "per_page" => 1, "total" => 2)
         end

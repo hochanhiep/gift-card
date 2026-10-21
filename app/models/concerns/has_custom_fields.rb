@@ -10,6 +10,12 @@ module HasCustomFields
   private
 
   def custom_fields_must_be_valid
+    unless custom_fields.is_a?(Array)
+      errors.add(:custom_fields, "must be an array")
+
+      return
+    end
+
     if custom_fields.size > MAX_CUSTOM_FIELDS
       errors.add(:custom_fields, "cannot have more than #{MAX_CUSTOM_FIELDS} fields")
     end
