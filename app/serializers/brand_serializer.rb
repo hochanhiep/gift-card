@@ -3,20 +3,16 @@ class BrandSerializer
     @brand = brand
   end
 
-  def as_json(*)
+  def as_json
     {
-      id:            brand.id,
-      name:          brand.name,
-      state:         brand.state,
-      custom_fields: brand.custom_fields,
-      created_at:    brand.created_at,
-      updated_at:    brand.updated_at
+      id:            @brand.id,
+      name:          @brand.name,
+      state:         @brand.state,
+      custom_fields: @brand.custom_fields,
+      created_at:    @brand.created_at,
+      updated_at:    @brand.updated_at
     }
   end
-
-  private
-
-  attr_reader :brand
 end
 
 # == Schema Information

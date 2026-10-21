@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   post "auth/login", to: "auth#login"
 
   namespace :admin do
-    resources :brands, only: %i[index show create update]
+    resources :brands, only: %i[index show create update] do
+      resources :products, only: %i[index create]
+    end
+
+    resources :products, only: %i[show update destroy]
   end
 end

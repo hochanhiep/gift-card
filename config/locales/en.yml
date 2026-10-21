@@ -36,3 +36,4 @@ en:
     forbidden: You are not allowed to do this
     parameter_missing: A required parameter is missing
     brand_not_found: Brand not found
+    product_not_found: Product not found
