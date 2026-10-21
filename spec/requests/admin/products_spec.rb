@@ -213,9 +213,18 @@ RSpec.describe "Admin products", type: :request do
       let!(:product)      { create(:product) }
       let(:id)            { product.id }
 
-      response "204", "Deletes the product" do
+      response "204", "Deletes the product and removes it from the clients that could use it" do
+        let(:client)        { create(:user, :client) }
+        let(:other_product) { create(:product) }
+
+        before do
+          create(:client_product, client: client, product: product)
+          create(:client_product, client: client, product: other_product)
+        end
+
         run_test! do
           expect(Product.exists?(product.id)).to be(false)
+          expect(client.products).to contain_exactly(other_product)
         end
       end
 

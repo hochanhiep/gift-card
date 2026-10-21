@@ -186,6 +186,63 @@ paths:
                   - inactive
               required:
               - state
+  "/admin/clients/{client_id}/products":
+    parameters:
+    - name: client_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: List the products a client can use
+      tags:
+      - Clients
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Returns only this client's products sorted by name
+        '404':
+          description: Responds with Client not found when the id belongs to an admin
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+    put:
+      summary: Replace the products a client can use
+      tags:
+      - Clients
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Removes all access when product_ids is empty
+        '422':
+          description: Rejects the change and keeps the current products when an id
+            does not match any product
+        '400':
+          description: Rejects the request when product_ids is missing
+        '404':
+          description: Responds with Client not found when the id does not match any
+            client
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_ids:
+                  type: array
+                  items:
+                    type: integer
+                  description: Send [] to remove all access
+              required:
+              - product_ids
   "/admin/clients":
     get:
       summary: List clients
@@ -521,7 +578,8 @@ paths:
       - bearerAuth: []
       responses:
         '204':
-          description: Deletes the product
+          description: Deletes the product and removes it from the clients that could
+            use it
         '404':
           description: Responds with Product not found when the id does not match
             any product

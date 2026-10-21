@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
     resources :clients, only: %i[index show create update] do
       patch :state, on: :member
+      resource :products, only: %i[show update], controller: "client_products"
     end
   end
 end

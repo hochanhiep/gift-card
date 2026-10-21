@@ -4,6 +4,7 @@ class Product < ApplicationRecord
   NAME_MAX_LENGTH = 120
 
   belongs_to :brand
+  has_many :client_products, dependent: :delete_all
 
   normalizes :name, with: ->(n) { n.strip }
 
