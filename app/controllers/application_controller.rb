@@ -7,6 +7,7 @@ class ApplicationController < ActionController::API
   rescue_from Unauthorized,     with: -> { render_error :unauthorized, code: :unauthorized }
   rescue_from JWT::DecodeError, with: -> { render_error :unauthorized, code: :invalid_token }
   rescue_from Forbidden,        with: -> { render_error :forbidden, code: :forbidden }
+  rescue_from ActiveRecord::RecordNotFound,       with: ->(error) { render_error :not_found, code: :"#{error.model.underscore}_not_found" }
   rescue_from ActiveRecord::RecordInvalid,        with: :render_invalid
   rescue_from ActionController::ParameterMissing, with: ->(error) { render_error :bad_request, code: :parameter_missing, message: error.message }
 

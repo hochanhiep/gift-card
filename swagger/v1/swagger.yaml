@@ -29,6 +29,122 @@ paths:
           description: Rejects the request when the token is missing
         '403':
           description: Rejects the request when the token belongs to a client
+    post:
+      summary: Create a brand
+      tags:
+      - Brands
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: Creates the brand and returns it
+        '422':
+          description: Rejects the brand when the name is already taken
+        '400':
+          description: Rejects the request when the brand params are missing
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brand:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    custom_fields:
+                      type: array
+                      maxItems: 5
+                      description: Optional, up to 5 fields
+                      items:
+                        type: object
+                        properties:
+                          label:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - label
+                        - value
+                  required:
+                  - name
+              required:
+              - brand
+  "/admin/brands/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Show a brand
+      tags:
+      - Brands
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Returns the brand
+        '404':
+          description: Responds with Brand not found when the id does not match any
+            brand
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+    patch:
+      summary: Update a brand
+      tags:
+      - Brands
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Updates the brand and returns it
+        '422':
+          description: Rejects the update when another brand already has the name
+        '404':
+          description: Responds with Brand not found when the id does not match any
+            brand
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brand:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    custom_fields:
+                      type: array
+                      maxItems: 5
+                      description: Replaces the current fields when sent
+                      items:
+                        type: object
+                        properties:
+                          label:
+                            type: string
+                          value:
+                            type: string
+                        required:
+                        - label
+                        - value
+              required:
+              - brand
   "/auth/login":
     post:
       summary: Log in and get a token
