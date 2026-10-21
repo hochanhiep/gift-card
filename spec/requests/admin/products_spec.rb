@@ -1,6 +1,9 @@
 require "swagger_helper"
 
 RSpec.describe "Admin products", type: :request do
+  let(:admin)         { create(:user, :admin) }
+  let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
+
   path "/admin/brands/{brand_id}/products" do
     parameter name: :brand_id, in: :path, type: :integer
 
@@ -12,8 +15,6 @@ RSpec.describe "Admin products", type: :request do
       parameter name: :page,     in: :query, type: :integer, required: false
       parameter name: :per_page, in: :query, type: :integer, required: false
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "Starbucks") }
       let(:brand_id)      { brand.id }
       let(:page)          { nil }
@@ -75,8 +76,6 @@ RSpec.describe "Admin products", type: :request do
         required: %w[product]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "Starbucks") }
       let(:brand_id)      { brand.id }
       let(:body) do
@@ -122,8 +121,6 @@ RSpec.describe "Admin products", type: :request do
       produces "application/json"
       security [ bearerAuth: [] ]
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:product)       { create(:product, name: "Phuc Long 50K", denomination: 50_000) }
       let(:id)            { product.id }
 
@@ -175,8 +172,6 @@ RSpec.describe "Admin products", type: :request do
         required: %w[product]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "The Coffee House") }
       let(:product)       { create(:product, brand: brand, name: "The Coffee House 50K", denomination: 50_000) }
       let(:id)            { product.id }
@@ -215,8 +210,6 @@ RSpec.describe "Admin products", type: :request do
       produces "application/json"
       security [ bearerAuth: [] ]
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let!(:product)      { create(:product) }
       let(:id)            { product.id }
 
@@ -255,8 +248,6 @@ RSpec.describe "Admin products", type: :request do
         required: %w[state]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:product)       { create(:product, :inactive, name: "Starbucks 100K") }
       let(:id)            { product.id }
       let(:body)          { { state: "active" } }

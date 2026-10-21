@@ -18,10 +18,10 @@ RSpec.describe "Auth", type: :request do
 
       let!(:user) { create(:user, :client, email: "test@example.com", password: "Password123") }
 
-      response "200", "returns a token" do
+      response "200", "Returns a token and the user when the email and password are correct" do
         let(:credentials) { { email: "test@Example.com ", password: "Password123" } }
 
-        run_test! do |response|
+        run_test! do
           data = json["data"]
 
           expect(JwtService.decode(data["token"])["sub"]).to eq(user.id)
@@ -29,20 +29,20 @@ RSpec.describe "Auth", type: :request do
         end
       end
 
-      response "401", "wrong password" do
-        let(:credentials) { { email: "client@example.com", password: "wrong-password" } }
+      response "401", "Rejects the login when the password is wrong" do
+        let(:credentials) { { email: "test@example.com", password: "wrong-password" } }
 
         run_test!
       end
 
-      response "401", "unknown email" do
-        let(:credentials) { { email: "unknow@example.com", password: "Password123" } }
+      response "401", "Rejects the login when no user has the email" do
+        let(:credentials) { { email: "unknown@example.com", password: "Password123" } }
 
         run_test!
       end
 
-      response "401", "deactivated user" do
-        let(:credentials) { { email: "client@example.com", password: "Password123" } }
+      response "401", "Rejects the login when the user is deactivated" do
+        let(:credentials) { { email: "test@example.com", password: "Password123" } }
         before { user.update!(active: false) }
 
         run_test!

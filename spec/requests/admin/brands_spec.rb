@@ -1,6 +1,9 @@
 require "swagger_helper"
 
 RSpec.describe "Admin brands", type: :request do
+  let(:admin)         { create(:user, :admin) }
+  let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
+
   path "/admin/brands" do
     get "List brands" do
       tags "Brands"
@@ -10,8 +13,6 @@ RSpec.describe "Admin brands", type: :request do
       parameter name: :page,     in: :query, type: :integer, required: false
       parameter name: :per_page, in: :query, type: :integer, required: false
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:page)          { nil }
       let(:per_page)      { nil }
 
@@ -71,8 +72,6 @@ RSpec.describe "Admin brands", type: :request do
         required: %w[brand]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:body) do
         { brand: { name: " Starbucks ", custom_fields: [ { label: "Country", value: "Vietnam" } ] } }
       end
@@ -115,8 +114,6 @@ RSpec.describe "Admin brands", type: :request do
       produces "application/json"
       security [ bearerAuth: [] ]
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "Phuc Long") }
       let(:id)            { brand.id }
 
@@ -167,8 +164,6 @@ RSpec.describe "Admin brands", type: :request do
         required: %w[brand]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "Phuc Long") }
       let(:id)            { brand.id }
       let(:body) do
@@ -221,8 +216,6 @@ RSpec.describe "Admin brands", type: :request do
         required: %w[state]
       }
 
-      let(:admin)         { create(:user, :admin) }
-      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
       let(:brand)         { create(:brand, name: "Highlands Coffee") }
       let(:id)            { brand.id }
       let(:body)          { { state: "inactive" } }

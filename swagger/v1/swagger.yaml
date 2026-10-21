@@ -410,9 +410,10 @@ paths:
       parameters: []
       responses:
         '200':
-          description: returns a token
+          description: Returns a token and the user when the email and password are
+            correct
         '401':
-          description: deactivated user
+          description: Rejects the login when the user is deactivated
       requestBody:
         content:
           application/json:
