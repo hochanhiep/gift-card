@@ -145,6 +145,47 @@ paths:
                         - value
               required:
               - brand
+  "/admin/brands/{id}/state":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Change a brand's state
+      tags:
+      - Brands
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Deactivates the brand and returns it
+        '422':
+          description: Rejects the change when the state is not active or inactive
+        '400':
+          description: Rejects the request when the state is missing
+        '404':
+          description: Responds with Brand not found when the id does not match any
+            brand
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+              required:
+              - state
   "/admin/brands/{brand_id}/products":
     parameters:
     - name: brand_id
@@ -320,6 +361,47 @@ paths:
           description: Rejects the request when the token is missing
         '403':
           description: Rejects the request when the token belongs to a client
+  "/admin/products/{id}/state":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Change a product's state
+      tags:
+      - Products
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: Activates the product and returns it
+        '422':
+          description: Rejects the change when the state is not active or inactive
+        '400':
+          description: Rejects the request when the state is missing
+        '404':
+          description: Responds with Product not found when the id does not match
+            any product
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+              required:
+              - state
   "/auth/login":
     post:
       summary: Log in and get a token

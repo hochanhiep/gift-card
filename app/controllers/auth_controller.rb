@@ -15,7 +15,7 @@ class AuthController < ApplicationController
         }
       }
     else
-     render_error :unauthorized, code: :invalid_credentials
+      render_error :unauthorized, code: :invalid_credentials
     end
   end
 end

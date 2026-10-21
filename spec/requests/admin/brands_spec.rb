@@ -38,17 +38,7 @@ RSpec.describe "Admin brands", type: :request do
         end
       end
 
-      response "401", "Rejects the request when the token is missing" do
-        let(:Authorization) { nil }
-
-        run_test!
-      end
-
-      response "403", "Rejects the request when the token belongs to a client" do
-        let(:Authorization) { "Bearer #{JwtService.issue(create(:user, :client)).value}" }
-
-        run_test!
-      end
+      auth_failures(wrong_role: :client)
     end
 
     post "Create a brand" do
@@ -113,19 +103,7 @@ RSpec.describe "Admin brands", type: :request do
         end
       end
 
-      response "401", "Rejects the request when the token is missing" do
-        let(:Authorization) { nil }
-
-        run_test!
-      end
-
-      response "403", "Rejects the request when the token belongs to a client" do
-        let(:Authorization) { "Bearer #{JwtService.issue(create(:user, :client)).value}" }
-
-        run_test! do
-          expect(Brand.count).to eq(0)
-        end
-      end
+      auth_failures(wrong_role: :client)
     end
   end
 
@@ -157,17 +135,7 @@ RSpec.describe "Admin brands", type: :request do
         end
       end
 
-      response "401", "Rejects the request when the token is missing" do
-        let(:Authorization) { nil }
-
-        run_test!
-      end
-
-      response "403", "Rejects the request when the token belongs to a client" do
-        let(:Authorization) { "Bearer #{JwtService.issue(create(:user, :client)).value}" }
-
-        run_test!
-      end
+      auth_failures(wrong_role: :client)
     end
 
     patch "Update a brand" do
@@ -232,19 +200,66 @@ RSpec.describe "Admin brands", type: :request do
         end
       end
 
-      response "401", "Rejects the request when the token is missing" do
-        let(:Authorization) { nil }
+      auth_failures(wrong_role: :client)
+    end
+  end
 
-        run_test!
-      end
+  path "/admin/brands/{id}/state" do
+    parameter name: :id, in: :path, type: :integer
 
-      response "403", "Rejects the request when the token belongs to a client" do
-        let(:Authorization) { "Bearer #{JwtService.issue(create(:user, :client)).value}" }
+    patch "Change a brand's state" do
+      tags "Brands"
+      consumes "application/json"
+      produces "application/json"
+      security [ bearerAuth: [] ]
 
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          state: { type: :string, enum: %w[active inactive] }
+        },
+        required: %w[state]
+      }
+
+      let(:admin)         { create(:user, :admin) }
+      let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
+      let(:brand)         { create(:brand, name: "Highlands Coffee") }
+      let(:id)            { brand.id }
+      let(:body)          { { state: "inactive" } }
+
+      response "200", "Deactivates the brand and returns it" do
         run_test! do
-          expect(brand.reload.name).to eq("Phuc Long")
+          expect(json["data"]["state"]).to eq("inactive")
+          expect(brand.reload).to be_inactive
         end
       end
+
+      response "422", "Rejects the change when the state is not active or inactive" do
+        let(:body) { { state: "archived" } }
+
+        run_test! do
+          expect(json["errors"].first).to include("code" => "invalid", "field" => "state")
+          expect(brand.reload).to be_active
+        end
+      end
+
+      response "400", "Rejects the request when the state is missing" do
+        let(:body) { {} }
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("parameter_missing")
+        end
+      end
+
+      response "404", "Responds with Brand not found when the id does not match any brand" do
+        let(:id) { 0 }
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("brand_not_found")
+        end
+      end
+
+      auth_failures(wrong_role: :client)
     end
   end
 end

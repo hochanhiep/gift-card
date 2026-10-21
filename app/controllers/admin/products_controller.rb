@@ -3,6 +3,7 @@ module Admin
     include Paginatable
 
     before_action :require_brand, only: %i[index create]
+    before_action :require_product, only: %i[update state destroy]
 
     def index
       products, page_info = paginate(@brand.products.order(:name))
@@ -21,14 +22,19 @@ module Admin
     end
 
     def update
-      product = Product.find(params[:id])
-      product.update!(product_params)
+      @product.update!(product_params)
 
-      render json: { data: ProductSerializer.new(product) }
+      render json: { data: ProductSerializer.new(@product) }
+    end
+
+    def state
+      @product.update!(state: params.require(:state))
+
+      render json: { data: ProductSerializer.new(@product) }
     end
 
     def destroy
-      Product.find(params[:id]).destroy!
+      @product.destroy!
 
       head :no_content
     end
@@ -37,6 +43,10 @@ module Admin
 
     def require_brand
       @brand = Brand.find(params[:brand_id])
+    end
+
+    def require_product
+      @product = Product.find(params[:id])
     end
 
     def product_params

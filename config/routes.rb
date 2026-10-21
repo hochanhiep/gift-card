@@ -14,9 +14,12 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :brands, only: %i[index show create update] do
+      patch :state, on: :member
       resources :products, only: %i[index create]
     end
 
-    resources :products, only: %i[show update destroy]
+    resources :products, only: %i[show update destroy] do
+      patch :state, on: :member
+    end
   end
 end
