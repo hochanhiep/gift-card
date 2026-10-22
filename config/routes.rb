@@ -27,4 +27,8 @@ Rails.application.routes.draw do
       resource :products, only: %i[show update], controller: "client_products"
     end
   end
+
+  namespace :client do
+    resources :products, only: %i[index show]
+  end
 end

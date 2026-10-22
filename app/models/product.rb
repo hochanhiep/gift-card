@@ -10,6 +10,8 @@ class Product < ApplicationRecord
 
   enum :state, { active: 0, inactive: 1 }, default: :active, validate: true
 
+  scope :available, -> { active.joins(:brand).merge(Brand.active) }
+
   validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }, uniqueness: { scope: :brand_id, case_sensitive: false }
   validates :denomination, numericality: { greater_than: 0, less_than: 100_000_000 }
 end
