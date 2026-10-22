@@ -1,8 +1,9 @@
 class User < ApplicationRecord
   has_secure_password
 
-  has_many :client_products, foreign_key: :client_id
+  has_many :client_products, foreign_key: :client_id, inverse_of: :client
   has_many :products, through: :client_products
+  has_many :cards, foreign_key: :client_id, inverse_of: :client
 
   enum :role, { admin: 0, client: 1 }
   enum :state, { active: 0, inactive: 1 }, default: :active, validate: true

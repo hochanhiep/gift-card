@@ -6,7 +6,9 @@ module AuthFailures
       run_test!
     end
 
-    response "403", "Rejects the request when the token belongs to #{wrong_role == :admin ? "an" : "a"} #{wrong_role}" do
+    article = wrong_role == :admin ? "an" : "a"
+
+    response "403", "Rejects the request when the token belongs to #{article} #{wrong_role}" do
       let(:Authorization) { "Bearer #{JwtService.issue(create(:user, wrong_role)).value}" }
 
       run_test!

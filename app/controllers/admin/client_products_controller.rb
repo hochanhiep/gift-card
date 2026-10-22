@@ -3,13 +3,14 @@ module Admin
     before_action :require_client
 
     def show
-      render json: { data: @client.products.order(:name).map { |product| ProductSerializer.new(product) } }
+      render_products
     end
 
     def update
-      @client.update!(product_ids: params.fetch(:product_ids).uniq)
+      product_ids = params.permit(product_ids: []).fetch(:product_ids)
+      @client.update!(product_ids: product_ids.map(&:to_i).uniq)
 
-      render json: { data: @client.products.order(:name).map { |product| ProductSerializer.new(product) } }
+      render_products
     rescue ActiveRecord::RecordNotFound
       render_error :unprocessable_content, code: :unknown_product
     end
@@ -20,6 +21,12 @@ module Admin
       @client = User.client.find_by(id: params[:client_id])
 
       render_error :not_found, code: :client_not_found unless @client
+    end
+
+    def render_products
+      products = @client.products.includes(:brand).order(:name)
+
+      render json: { data: products.map { |product| ProductSerializer.new(product) } }
     end
   end
 end

@@ -2,7 +2,7 @@ module Admin
   class BrandsController < BaseController
     include Paginatable
 
-    before_action :require_brand, only: [ :update, :state ]
+    before_action :require_brand, only: %i[update state]
 
     def index
       brands, page_info = paginate(Brand.order(:name))

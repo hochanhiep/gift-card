@@ -7,8 +7,10 @@ class ProductSerializer
     {
       id:            @product.id,
       brand_id:      @product.brand_id,
+      brand_name:    @product.brand.name,
       name:          @product.name,
       denomination:  @product.denomination,
+      pin_required:  @product.pin_required,
       state:         @product.state,
       custom_fields: @product.custom_fields,
       created_at:    @product.created_at,
@@ -25,6 +27,7 @@ end
 #  custom_fields :jsonb            not null
 #  denomination  :decimal(10, 2)   not null
 #  name          :citext           not null
+#  pin_required  :boolean          default(TRUE), not null
 #  state         :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

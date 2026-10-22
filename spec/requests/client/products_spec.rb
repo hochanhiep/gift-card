@@ -19,8 +19,9 @@ RSpec.describe "Client products", type: :request do
       security [ bearerAuth: [] ]
 
       parameter name: :q,                in: :query, type: :string, required: false
-      parameter name: :search_in,        in: :query, required: false, schema: { type: :string, enum: %w[product brand] },
-                                         description: "Search only product names or only brand names. Searches both by default"
+      parameter name: :search_in, in: :query, required: false,
+                schema: { type: :string, enum: %w[product brand] },
+                description: "Search only product names or only brand names. Searches both by default"
       parameter name: :min_denomination, in: :query, type: :string, required: false
       parameter name: :max_denomination, in: :query, type: :string, required: false
       parameter name: :page,             in: :query, type: :integer, required: false
@@ -35,7 +36,9 @@ RSpec.describe "Client products", type: :request do
 
       response "200", "Returns the client's available products sorted by name" do
         run_test! do
-          expect(json["data"].map { |product| product["name"] }).to eq([ "Highlands 50K", "Starbucks 100K", "Starbucks 200K" ])
+          names = json["data"].map { |product| product["name"] }
+
+          expect(names).to eq([ "Highlands 50K", "Starbucks 100K", "Starbucks 200K" ])
           expect(json["total"]).to eq(3)
         end
       end
@@ -48,6 +51,12 @@ RSpec.describe "Client products", type: :request do
         run_test! do
           expect(json["data"].map { |product| product["name"] }).to eq([ "Starbucks 100K" ])
         end
+      end
+
+      response "401", "Rejects the request when the client has been deactivated" do
+        before { client.inactive! }
+
+        run_test!
       end
 
       auth_failures(wrong_role: :admin)
@@ -70,8 +79,16 @@ RSpec.describe "Client products", type: :request do
         end
       end
 
-      response "404", "Responds with Product not found when the product is not in the client's catalog" do
+      response "404", "Responds with Product not found when the client has no access to the product" do
         let(:id) { create(:product, brand: starbucks, name: "Starbucks 500K").id }
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("product_not_found")
+        end
+      end
+
+      response "404", "Responds with Product not found when the product is inactive" do
+        before { starbucks_100.inactive! }
 
         run_test! do
           expect(json["errors"].first["code"]).to eq("product_not_found")

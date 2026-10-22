@@ -12,8 +12,15 @@ class Product < ApplicationRecord
 
   scope :available, -> { active.joins(:brand).merge(Brand.active) }
 
-  validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }, uniqueness: { scope: :brand_id, case_sensitive: false }
+  validates :name, presence: true,
+                   length: { maximum: NAME_MAX_LENGTH },
+                   uniqueness: { scope: :brand_id, case_sensitive: false }
   validates :denomination, numericality: { greater_than: 0, less_than: 100_000_000 }
+  validates :pin_required, inclusion: { in: [ true, false ] }
+
+  def available?
+    active? && brand.active?
+  end
 end
 
 # == Schema Information
@@ -24,6 +31,7 @@ end
 #  custom_fields :jsonb            not null
 #  denomination  :decimal(10, 2)   not null
 #  name          :citext           not null
+#  pin_required  :boolean          default(TRUE), not null
 #  state         :integer          default(0), not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

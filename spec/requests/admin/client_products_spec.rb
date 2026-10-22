@@ -4,12 +4,13 @@ RSpec.describe "Admin client products", type: :request do
   let(:admin)         { create(:user, :admin) }
   let(:Authorization) { "Bearer #{JwtService.issue(admin).value}" }
 
-  let(:client)      { create(:user, :client, email: "shop@example.com") }
-  let(:client_id)   { client.id }
-  let(:starbucks)   { create(:brand, name: "Starbucks") }
-  let(:starbucks_1) { create(:product, brand: starbucks, name: "Starbucks 100K", denomination: 100_000) }
-  let(:starbucks_2) { create(:product, brand: starbucks, name: "Starbucks 200K", denomination: 200_000) }
-  let(:highlands)   { create(:product, brand: create(:brand, name: "Highlands Coffee"), name: "Highlands 50K", denomination: 50_000) }
+  let(:client)        { create(:user, :client, email: "shop@example.com") }
+  let(:client_id)     { client.id }
+  let(:starbucks)     { create(:brand, name: "Starbucks") }
+  let(:starbucks_100) { create(:product, brand: starbucks, name: "Starbucks 100K", denomination: 100_000) }
+  let(:starbucks_200) { create(:product, brand: starbucks, name: "Starbucks 200K", denomination: 200_000) }
+  let(:highlands)     { create(:brand, name: "Highlands Coffee") }
+  let(:highlands_50)  { create(:product, brand: highlands, name: "Highlands 50K", denomination: 50_000) }
 
   path "/admin/clients/{client_id}/products" do
     parameter name: :client_id, in: :path, type: :integer
@@ -20,9 +21,9 @@ RSpec.describe "Admin client products", type: :request do
       security [ bearerAuth: [] ]
 
       before do
-        create(:client_product, client: client, product: starbucks_2)
-        create(:client_product, client: client, product: highlands)
-        create(:client_product, product: starbucks_1)
+        create(:client_product, client: client, product: starbucks_200)
+        create(:client_product, client: client, product: highlands_50)
+        create(:client_product, product: starbucks_100)
       end
 
       response "200", "Returns only this client's products sorted by name" do
@@ -56,22 +57,22 @@ RSpec.describe "Admin client products", type: :request do
         required: %w[product_ids]
       }
 
-      let(:body) { { product_ids: [ starbucks_2.id, highlands.id ] } }
+      let(:body) { { product_ids: [ starbucks_200.id, highlands_50.id ] } }
 
-      before { create(:client_product, client: client, product: starbucks_1) }
+      before { create(:client_product, client: client, product: starbucks_100) }
 
       response "200", "Replaces the client's products with the given ones and returns them" do
         run_test! do
           expect(json["data"].map { |product| product["name"] }).to eq([ "Highlands 50K", "Starbucks 200K" ])
-          expect(client.products).to contain_exactly(starbucks_2, highlands)
+          expect(client.products).to contain_exactly(starbucks_200, highlands_50)
         end
       end
 
       response "200", "Ignores repeated product ids" do
-        let(:body) { { product_ids: [ highlands.id, highlands.id ] } }
+        let(:body) { { product_ids: [ highlands_50.id, highlands_50.id.to_s ] } }
 
         run_test! do
-          expect(client.products).to contain_exactly(highlands)
+          expect(client.products).to contain_exactly(highlands_50)
         end
       end
 
@@ -85,11 +86,11 @@ RSpec.describe "Admin client products", type: :request do
       end
 
       response "422", "Rejects the change and keeps the current products when an id does not match any product" do
-        let(:body) { { product_ids: [ highlands.id, 0 ] } }
+        let(:body) { { product_ids: [ highlands_50.id, 0 ] } }
 
         run_test! do
           expect(json["errors"].first["code"]).to eq("unknown_product")
-          expect(client.products).to contain_exactly(starbucks_1)
+          expect(client.products).to contain_exactly(starbucks_100)
         end
       end
 

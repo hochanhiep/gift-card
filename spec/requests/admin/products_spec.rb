@@ -29,7 +29,9 @@ RSpec.describe "Admin products", type: :request do
       response "200", "Returns only this brand's products sorted by name" do
         run_test! do
           expect(json["data"].map { |product| product["name"] }).to eq([ "Starbucks 100K", "Starbucks 200K" ])
-          expect(json["data"].first.keys).to match_array(%w[id brand_id name denomination state custom_fields created_at updated_at])
+          expect(json["data"].first.keys).to match_array(
+            %w[id brand_id brand_name name denomination pin_required state custom_fields created_at updated_at]
+          )
           expect(json["total"]).to eq(2)
         end
       end
@@ -59,6 +61,7 @@ RSpec.describe "Admin products", type: :request do
             properties: {
               name: { type: :string },
               denomination: { type: :string, example: "100000.00" },
+              pin_required: { type: :boolean, description: "Defaults to true" },
               custom_fields: {
                 type: :array,
                 maxItems: 5,
@@ -79,7 +82,13 @@ RSpec.describe "Admin products", type: :request do
       let(:brand)         { create(:brand, name: "Starbucks") }
       let(:brand_id)      { brand.id }
       let(:body) do
-        { product: { name: " Starbucks 100K ", denomination: "100000", custom_fields: [ { label: "Size", value: "Tall" } ] } }
+        {
+          product: {
+            name: " Starbucks 100K ",
+            denomination: "100000",
+            custom_fields: [ { label: "Size", value: "Tall" } ]
+          }
+        }
       end
 
       response "201", "Creates the product under the brand and returns it" do
@@ -156,6 +165,7 @@ RSpec.describe "Admin products", type: :request do
             properties: {
               name: { type: :string },
               denomination: { type: :string, example: "100000.00" },
+              pin_required: { type: :boolean, description: "Defaults to true" },
               custom_fields: {
                 type: :array,
                 maxItems: 5,
@@ -225,6 +235,21 @@ RSpec.describe "Admin products", type: :request do
         run_test! do
           expect(Product.exists?(product.id)).to be(false)
           expect(client.products).to contain_exactly(other_product)
+        end
+      end
+
+      response "409", "Rejects the delete when cards were already issued for the product" do
+        let(:client) { create(:user, :client) }
+
+        before do
+          create(:client_product, client: client, product: product)
+          create(:card, client: client, product: product)
+        end
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("product_has_cards")
+          expect(Product.exists?(product.id)).to be(true)
+          expect(client.products).to include(product)
         end
       end
 

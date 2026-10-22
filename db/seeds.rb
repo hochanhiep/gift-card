@@ -61,7 +61,8 @@ if Rails.env.development?
     },
     "shop.hanoi@example.com" => {
       payout_rate: 7.5, state: :active,
-      products: [ "Phuc Long 50K", "Phuc Long 100K", "Highlands 100K", "Lotteria 50K", "Lotteria 150K", "Jollibee 100K", "KFC 100K" ]
+      products: [ "Phuc Long 50K", "Phuc Long 100K", "Highlands 100K",
+                  "Lotteria 50K", "Lotteria 150K", "Jollibee 100K", "KFC 100K" ]
     },
     "shop.closed@example.com" => {
       payout_rate: 5, state: :inactive,

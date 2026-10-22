@@ -1,6 +1,6 @@
 module Catalog
   class Search < ApplicationService
-    def initialize(client, filters = {})
+    def initialize(client, filters)
       @client = client
       @filters = filters
     end

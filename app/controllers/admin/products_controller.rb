@@ -37,6 +37,8 @@ module Admin
       @product.destroy!
 
       head :no_content
+    rescue ActiveRecord::InvalidForeignKey
+      render_error :conflict, code: :product_has_cards
     end
 
     private
@@ -50,7 +52,7 @@ module Admin
     end
 
     def product_params
-      params.require(:product).permit(:name, :denomination, custom_fields: %i[label value])
+      params.require(:product).permit(:name, :denomination, :pin_required, custom_fields: %i[label value])
     end
   end
 end

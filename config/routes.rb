@@ -30,5 +30,6 @@ Rails.application.routes.draw do
 
   namespace :client do
     resources :products, only: %i[index show]
+    resources :cards, only: %i[create]
   end
 end

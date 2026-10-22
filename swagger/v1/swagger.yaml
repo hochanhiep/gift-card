@@ -478,6 +478,9 @@ paths:
                     denomination:
                       type: string
                       example: '100000.00'
+                    pin_required:
+                      type: boolean
+                      description: Defaults to true
                     custom_fields:
                       type: array
                       maxItems: 5
@@ -554,6 +557,9 @@ paths:
                     denomination:
                       type: string
                       example: '100000.00'
+                    pin_required:
+                      type: boolean
+                      description: Defaults to true
                     custom_fields:
                       type: array
                       maxItems: 5
@@ -580,6 +586,8 @@ paths:
         '204':
           description: Deletes the product and removes it from the clients that could
             use it
+        '409':
+          description: Rejects the delete when cards were already issued for the product
         '404':
           description: Responds with Product not found when the id does not match
             any product
@@ -653,6 +661,53 @@ paths:
               required:
               - email
               - password
+  "/client/cards":
+    post:
+      summary: Issue a card
+      tags:
+      - Cards
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        description: Unique per card request. Sending it again returns the same card
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Issues a new card for the product
+        '200':
+          description: Returns the same card when the request is sent again with the
+            same key
+          headers:
+            Idempotent-Replayed:
+              schema:
+                type: string
+              description: true when the card was issued before
+        '422':
+          description: Rejects the request when the Idempotency-Key is longer than
+            255 characters
+        '404':
+          description: Responds with Product not found when the client has no access
+            to the product
+        '400':
+          description: Rejects the request when the Idempotency-Key header is missing
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to an admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+              required:
+              - product_id
   "/client/products":
     get:
       summary: Browse the catalog
@@ -720,8 +775,7 @@ paths:
         '200':
           description: Returns the product
         '404':
-          description: Responds with Product not found when the product is not in
-            the client's catalog
+          description: Responds with Product not found when the product is inactive
         '401':
           description: Rejects the request when the token is missing
         '403':

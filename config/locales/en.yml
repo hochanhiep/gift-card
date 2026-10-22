@@ -39,3 +39,7 @@ en:
     product_not_found: Product not found
     client_not_found: Client not found
     unknown_product: One or more products do not exist
+    product_unavailable: This product is not available right now
+    idempotency_key_missing: The Idempotency-Key header is required
+    idempotency_key_reused: This Idempotency-Key was already used
+    product_has_cards: This product has cards and cannot be deleted. Deactivate it instead
