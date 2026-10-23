@@ -708,6 +708,31 @@ paths:
                   type: integer
               required:
               - product_id
+  "/client/cards/{id}/cancel":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    post:
+      summary: Cancel a card
+      tags:
+      - Cards
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Cancels the card and returns it
+        '409':
+          description: Rejects the request when the card is already cancelled
+        '404':
+          description: Responds with Card not found when the card belongs to another
+            client
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to an admin
   "/client/products":
     get:
       summary: Browse the catalog

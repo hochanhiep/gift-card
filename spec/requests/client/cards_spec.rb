@@ -95,4 +95,43 @@ RSpec.describe "Client cards", type: :request do
       auth_failures(wrong_role: :admin)
     end
   end
+
+  path "/client/cards/{id}/cancel" do
+    parameter name: :id, in: :path, type: :integer
+
+    post "Cancel a card" do
+      tags "Cards"
+      produces "application/json"
+      security [ bearerAuth: [] ]
+
+      let(:card) { create(:card, client: client, product: starbucks_100) }
+      let(:id)   { card.id }
+
+      response "200", "Cancels the card and returns it" do
+        run_test! do
+          expect(json["data"]["state"]).to eq("cancelled")
+          expect(json["data"]["cancelled_at"]).to be_present
+          expect(card.reload).to be_cancelled
+        end
+      end
+
+      response "409", "Rejects the request when the card is already cancelled" do
+        let(:card) { create(:card, :cancelled, client: client, product: starbucks_100) }
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("already_cancelled")
+        end
+      end
+
+      response "404", "Responds with Card not found when the card belongs to another client" do
+        let(:id) { create(:card, product: starbucks_100).id }
+
+        run_test! do
+          expect(json["errors"].first["code"]).to eq("card_not_found")
+        end
+      end
+
+      auth_failures(wrong_role: :admin)
+    end
+  end
 end

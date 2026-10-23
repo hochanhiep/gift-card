@@ -43,3 +43,5 @@ en:
     idempotency_key_missing: The Idempotency-Key header is required
     idempotency_key_reused: This Idempotency-Key was already used
     product_has_cards: This product has cards and cannot be deleted. Deactivate it instead
+    card_not_found: Card not found
+   

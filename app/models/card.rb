@@ -5,10 +5,17 @@ class Card < ApplicationRecord
   enum :state, { issued: 0, cancelled: 1 }, default: :issued, validate: true
 
   validates :idempotency_key, length: { maximum: 255 }
+  validate :cannot_be_reissued, on: :update
 
   encrypts :pin
 
   attr_readonly :client_id, :product_id, :idempotency_key, :activation_number, :pin, :denomination, :payout_rate
+
+  private
+
+  def cannot_be_reissued
+    errors.add(:state, "cannot change back to issued") if state_changed?(from: "cancelled", to: "issued")
+  end
 end
 
 # == Schema Information
