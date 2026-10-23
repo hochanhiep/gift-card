@@ -26,6 +26,8 @@ Rails.application.routes.draw do
       patch :state, on: :member
       resource :products, only: %i[show update], controller: "client_products"
     end
+
+    resources :reports, only: :index
   end
 
   namespace :client do

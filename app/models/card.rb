@@ -4,6 +4,8 @@ class Card < ApplicationRecord
 
   enum :state, { issued: 0, cancelled: 1 }, default: :issued, validate: true
 
+  scope :created_within, ->(range) { where(created_at: range) if range }
+
   validates :idempotency_key, length: { maximum: 255 }
   validate :cannot_be_reissued, on: :update
 

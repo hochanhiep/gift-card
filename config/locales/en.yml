@@ -46,3 +46,4 @@ en:
     card_not_found: Card not found
     already_cancelled: This card is already cancelled
     invalid_date: Dates must be in YYYY-MM-DD format
+    invalid_report_type: report_type must be brand or client

@@ -4,6 +4,7 @@ class Brand < ApplicationRecord
   NAME_MAX_LENGTH = 120
 
   has_many :products
+  has_many :cards, through: :products
 
   normalizes :name, with: ->(n) { n.strip }
 

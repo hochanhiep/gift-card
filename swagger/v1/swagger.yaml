@@ -636,6 +636,47 @@ paths:
                   - inactive
               required:
               - state
+  "/admin/reports":
+    get:
+      summary: Report card spending and cancellations by brand or by client
+      tags:
+      - Reports
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: report_type
+        in: query
+        enum:
+        - brand
+        - client
+        required: true
+        description: "Report totals by brand or by client:\n * `brand` \n * `client`
+          \n "
+        schema:
+          type: string
+      - name: from
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      - name: to
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns totals for each client with cards issued in the range
+        '422':
+          description: Rejects the request when a date is not in YYYY-MM-DD format
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
   "/auth/login":
     post:
       summary: Log in and get a token

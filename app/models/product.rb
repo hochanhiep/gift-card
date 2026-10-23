@@ -5,6 +5,7 @@ class Product < ApplicationRecord
 
   belongs_to :brand
   has_many :client_products, dependent: :delete_all
+  has_many :cards
 
   normalizes :name, with: ->(n) { n.strip }
 
