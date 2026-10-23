@@ -30,6 +30,10 @@ Rails.application.routes.draw do
 
   namespace :client do
     resources :products, only: %i[index show]
-    resources :cards, only: %i[create]
+    resources :cards, only: %i[create] do
+      post :cancel, on: :member
+    end
+
+    get "reports/spending", to: "reports#spending"
   end
 end

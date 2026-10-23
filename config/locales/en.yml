@@ -44,4 +44,5 @@ en:
     idempotency_key_reused: This Idempotency-Key was already used
     product_has_cards: This product has cards and cannot be deleted. Deactivate it instead
     card_not_found: Card not found
-   
+    already_cancelled: This card is already cancelled
+    invalid_date: Dates must be in YYYY-MM-DD format

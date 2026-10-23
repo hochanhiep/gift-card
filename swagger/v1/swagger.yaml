@@ -805,6 +805,38 @@ paths:
           description: Rejects the request when the token is missing
         '403':
           description: Rejects the request when the token belongs to an admin
+  "/client/reports/spending":
+    get:
+      summary: Report my spending and cancellations
+      tags:
+      - Reports
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      - name: to
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Returns the client's spending and cancellations for cards issued
+            in the range
+        '422':
+          description: Rejects the request when a date is not in YYYY-MM-DD format
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to an admin
 components:
   securitySchemes:
     bearerAuth:
