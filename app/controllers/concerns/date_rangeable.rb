@@ -8,8 +8,8 @@ module DateRangeable
   private
 
   def date_range
-    from = Date.iso8601(params[:from]).beginning_of_day if params[:from].present?
-    to = Date.iso8601(params[:to]).end_of_day if params[:to].present?
+    from = Date.iso8601(params[:from].to_s).beginning_of_day if params[:from].present?
+    to = Date.iso8601(params[:to].to_s).end_of_day if params[:to].present?
 
     from..to if from || to
   end

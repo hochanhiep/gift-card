@@ -5,7 +5,7 @@ module Client
     def spending
       report = Reports::CardTotals.execute(current_user.cards, date_range)
 
-      render json: { data: { from: params[:from], to: params[:to] }.merge(report) }
+      render json: { data: report, from: params[:from], to: params[:to] }
     end
   end
 end

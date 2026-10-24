@@ -42,10 +42,12 @@ RSpec.describe "Auth", type: :request do
         end
       end
 
-      response "401", "Rejects the login when no user has the email" do
+      response "401", "Rejects the login when the email is not in the system" do
         let(:credentials) { { email: "unknown@example.com", password: "Password123" } }
 
-        run_test!
+        run_test! do
+          expect(AuditLog.last).to have_attributes(action: AuditLog::LOGIN_FAILED, user_id: nil)
+        end
       end
 
       response "401", "Rejects the login when the user is deactivated" do

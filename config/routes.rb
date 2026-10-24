@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     end
 
     resources :reports, only: :index
+    resources :audit_logs, only: :index
   end
 
   namespace :client do
