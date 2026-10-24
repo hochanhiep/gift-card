@@ -36,6 +36,9 @@ RSpec.describe "Client cards", type: :request do
           )
           expect(json["data"]["pin"]).to be_present
           expect(response.headers["Idempotent-Replayed"]).to be_nil
+          expect(AuditLog.last).to have_attributes(
+            action: AuditLog::CARD_ISSUE, user_id: client.id, record_id: json["data"]["id"]
+          )
         end
       end
 
@@ -65,6 +68,8 @@ RSpec.describe "Client cards", type: :request do
         run_test! do
           expect(json["errors"].first["code"]).to eq("product_unavailable")
           expect(Card.count).to eq(0)
+          expect(AuditLog.last).to have_attributes(action: AuditLog::CARD_ISSUE_REFUSED, user_id: client.id)
+          expect(AuditLog.last.metadata).to include("error" => "product_unavailable", "product_id" => starbucks_100.id)
         end
       end
 
@@ -112,6 +117,7 @@ RSpec.describe "Client cards", type: :request do
           expect(json["data"]["state"]).to eq("cancelled")
           expect(json["data"]["cancelled_at"]).to be_present
           expect(card.reload).to be_cancelled
+          expect(AuditLog.last).to have_attributes(action: AuditLog::CARD_CANCEL, record_id: card.id)
         end
       end
 
@@ -120,6 +126,8 @@ RSpec.describe "Client cards", type: :request do
 
         run_test! do
           expect(json["errors"].first["code"]).to eq("already_cancelled")
+          expect(AuditLog.last).to have_attributes(action: AuditLog::CARD_CANCEL_REFUSED, record_id: nil)
+          expect(AuditLog.last.metadata).to include("error" => "already_cancelled")
         end
       end
 

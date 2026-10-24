@@ -65,6 +65,10 @@ RSpec.describe "Admin client products", type: :request do
         run_test! do
           expect(json["data"].map { |product| product["name"] }).to eq([ "Highlands 50K", "Starbucks 200K" ])
           expect(client.products).to contain_exactly(starbucks_200, highlands_50)
+          expect(AuditLog.last).to have_attributes(
+            action: AuditLog::CLIENT_PRODUCTS_UPDATE, user_id: admin.id, record_id: client.id,
+            change_set: { "product_ids" => [ [ starbucks_100.id ], [ starbucks_200.id, highlands_50.id ].sort ] }
+          )
         end
       end
 

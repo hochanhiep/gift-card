@@ -4,6 +4,64 @@ info:
   title: API V1
   version: v1
 paths:
+  "/admin/audit_logs":
+    get:
+      summary: List the audit log
+      tags:
+      - Audit logs
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: log_action
+        in: query
+        required: false
+        description: Action name, e.g. card.issue or brand.update
+        schema:
+          type: string
+      - name: record_type
+        in: query
+        required: false
+        description: Model name, e.g. Brand, Product, User or Card
+        schema:
+          type: string
+      - name: from
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      - name: to
+        in: query
+        format: date
+        required: false
+        description: Date (YYYY-MM-DD)
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Returns only the entries created in the date range
+        '422':
+          description: Rejects the request when a date is not in YYYY-MM-DD format
+        '401':
+          description: Rejects the request when the token is missing
+        '403':
+          description: Rejects the request when the token belongs to a client
   "/admin/brands":
     get:
       summary: List brands
