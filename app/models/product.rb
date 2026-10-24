@@ -1,5 +1,6 @@
 class Product < ApplicationRecord
   include HasCustomFields
+  include Auditable
 
   NAME_MAX_LENGTH = 120
 

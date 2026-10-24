@@ -8,7 +8,13 @@ module Admin
 
     def update
       product_ids = params.permit(product_ids: []).fetch(:product_ids)
+      before = @client.product_ids.sort
       @client.update!(product_ids: product_ids.map(&:to_i).uniq)
+
+      AuditLog.record(
+        action: AuditLog::CLIENT_PRODUCTS_UPDATE, record: @client,
+        change_set: { product_ids: [ before, @client.product_ids.sort ] }
+      )
 
       render_products
     rescue ActiveRecord::RecordNotFound

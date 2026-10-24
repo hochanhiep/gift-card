@@ -1,6 +1,11 @@
 class AuditLog < ApplicationRecord
   LOGIN = "auth.login".freeze
   LOGIN_FAILED = "auth.login_failed".freeze
+  CLIENT_PRODUCTS_UPDATE = "client_products.update".freeze
+  CARD_ISSUE = "card.issue".freeze
+  CARD_ISSUE_REFUSED = "card.issue_refused".freeze
+  CARD_CANCEL = "card.cancel".freeze
+  CARD_CANCEL_REFUSED = "card.cancel_refused".freeze
 
   FILTER = ActiveSupport::ParameterFilter.new([ /\Apin\z/i, /password/i, /digest/i ])
 

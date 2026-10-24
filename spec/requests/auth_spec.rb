@@ -26,7 +26,7 @@ RSpec.describe "Auth", type: :request do
 
           expect(JwtService.decode(data["token"])["sub"]).to eq(user.id)
           expect(data["user"]["email"]).to eq("test@example.com")
-          expect(AuditLog.sole).to have_attributes(action: AuditLog::LOGIN, user_id: user.id)
+          expect(AuditLog.last).to have_attributes(action: AuditLog::LOGIN, user_id: user.id)
         end
       end
 
@@ -34,7 +34,7 @@ RSpec.describe "Auth", type: :request do
         let(:credentials) { { email: "test@example.com", password: "wrong-password" } }
 
         run_test! do
-          log = AuditLog.sole
+          log = AuditLog.last
 
           expect(log).to have_attributes(action: AuditLog::LOGIN_FAILED, user_id: nil)
           expect(log.metadata).to eq("email" => "test@example.com", "reason" => "invalid_credentials")
@@ -53,8 +53,8 @@ RSpec.describe "Auth", type: :request do
         before { user.update!(state: :inactive) }
 
         run_test! do
-          expect(AuditLog.sole).to have_attributes(action: AuditLog::LOGIN_FAILED, user_id: user.id)
-          expect(AuditLog.sole.metadata["reason"]).to eq("inactive")
+          expect(AuditLog.last).to have_attributes(action: AuditLog::LOGIN_FAILED, user_id: user.id)
+          expect(AuditLog.last.metadata["reason"]).to eq("inactive")
         end
       end
     end

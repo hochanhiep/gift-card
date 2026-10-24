@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Auditable
+
   has_secure_password
 
   has_many :client_products, foreign_key: :client_id, inverse_of: :client

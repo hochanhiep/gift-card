@@ -13,10 +13,16 @@ module Client
     before_action :require_idempotency_key, only: :create
 
     def create
-      result = Cards::Issue.execute(
-        client: current_user,
-        product_id: params.require(:product_id),
-        idempotency_key: idempotency_key
+      product_id = params.require(:product_id)
+      result = Cards::Issue.execute(client: current_user, product_id: product_id, idempotency_key: idempotency_key)
+
+      AuditLog.record(
+        action: result.success? ? AuditLog::CARD_ISSUE : AuditLog::CARD_ISSUE_REFUSED,
+        record: result.card,
+        metadata: {
+          product_id: product_id, idempotency_key: idempotency_key, replayed: result.replayed,
+          error: result.error
+        }.compact
       )
 
       return render_error(ERROR_STATUSES.fetch(result.error), code: result.error) unless result.success?
@@ -28,6 +34,12 @@ module Client
 
     def cancel
       result = Cards::Cancel.execute(client: current_user, card_id: params[:id])
+
+      AuditLog.record(
+        action: result.success? ? AuditLog::CARD_CANCEL : AuditLog::CARD_CANCEL_REFUSED,
+        record: result.card,
+        metadata: { card_id: params[:id], error: result.error }.compact
+      )
 
       return render_error(ERROR_STATUSES.fetch(result.error), code: result.error) unless result.success?
 
