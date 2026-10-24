@@ -22,6 +22,10 @@ RSpec.describe "Admin reports", type: :request do
 
       parameter name: :report_type, in: :query, type: :string, enum: %w[brand client], required: true,
                 description: "Report totals by brand or by client"
+      parameter name: :brand_id, in: :query, type: :integer, required: false,
+                description: "Only this brand, when report_type is brand"
+      parameter name: :client_id, in: :query, type: :integer, required: false,
+                description: "Only this client, when report_type is client"
       parameter name: :from, in: :query, type: :string, format: :date, required: false,
                 description: "Date (YYYY-MM-DD)"
       parameter name: :to, in: :query, type: :string, format: :date, required: false,
@@ -73,6 +77,14 @@ RSpec.describe "Admin reports", type: :request do
               "cancellations" => { "cards" => 1, "amount" => "50000.0" }
             }
           ])
+        end
+      end
+
+      response "200", "Returns only the given brand when brand_id is set" do
+        let(:brand_id) { starbucks_100.brand_id }
+
+        run_test! do
+          expect(json["data"].pluck("name")).to eq([ "Starbucks" ])
         end
       end
 

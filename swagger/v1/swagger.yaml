@@ -654,6 +654,18 @@ paths:
           \n "
         schema:
           type: string
+      - name: brand_id
+        in: query
+        required: false
+        description: Only this brand, when report_type is brand
+        schema:
+          type: integer
+      - name: client_id
+        in: query
+        required: false
+        description: Only this client, when report_type is client
+        schema:
+          type: integer
       - name: from
         in: query
         format: date
@@ -670,7 +682,7 @@ paths:
           type: string
       responses:
         '200':
-          description: Returns totals for each client with cards issued in the range
+          description: Returns only the given brand when brand_id is set
         '422':
           description: Rejects the request when a date is not in YYYY-MM-DD format
         '401':

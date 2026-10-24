@@ -16,7 +16,7 @@ RSpec.describe Reports::ByClient do
     card(michael, 30, state: :cancelled, cancelled_at: Time.current)
     card(dwight, 20)
 
-    expect(described_class.execute(range)).to eq([
+    expect(described_class.execute(range, {})).to eq([
       {
         id: dwight.id, email: "dwight@example.com",
         spending: { cards: 1, amount: 20, payout: 2 },
@@ -34,6 +34,15 @@ RSpec.describe Reports::ByClient do
     card(dwight, 20, created_at: Time.utc(2026, 11, 1))
     create(:user, :client, email: "michael@example.com")
 
-    expect(described_class.execute(range)).to be_empty
+    expect(described_class.execute(range, {})).to be_empty
+  end
+
+  it "only returns the client given by client_id" do
+    card(dwight, 20)
+    card(michael, 50)
+
+    report = described_class.execute(range, { client_id: michael.id.to_s })
+
+    expect(report.pluck(:email)).to eq([ "michael@example.com" ])
   end
 end
