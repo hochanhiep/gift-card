@@ -2,8 +2,6 @@ class ApplicationController < ActionController::API
   class Unauthorized < StandardError; end
   class Forbidden    < StandardError; end
 
-  attr_reader :current_user
-
   rescue_from Unauthorized,     with: -> { render_error :unauthorized, code: :unauthorized }
   rescue_from JWT::DecodeError, with: -> { render_error :unauthorized, code: :invalid_token }
   rescue_from Forbidden,        with: -> { render_error :forbidden, code: :forbidden }
@@ -11,9 +9,15 @@ class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordInvalid,        with: :render_invalid
   rescue_from ActionController::ParameterMissing, with: ->(error) { render_error :bad_request, code: :parameter_missing, message: error.message }
 
+  before_action :set_current_request
   before_action :authenticate_request!
 
   private
+
+  def set_current_request
+    Current.ip_address = request.remote_ip
+    Current.user_agent = request.user_agent
+  end
 
   def authenticate_request!
     token = request.authorization.to_s[/\ABearer (.+)\z/, 1]
@@ -24,7 +28,11 @@ class ApplicationController < ActionController::API
 
     raise Unauthorized unless user.present? && user.active?
 
-    @current_user = user
+    Current.user = user
+  end
+
+  def current_user
+    Current.user
   end
 
   def require_role!(role)

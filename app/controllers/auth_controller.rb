@@ -5,6 +5,7 @@ class AuthController < ApplicationController
     user = User.authenticate_by(email: params[:email].to_s, password: params[:password].to_s)
 
     if user.present? && user.active?
+      AuditLog.record(action: AuditLog::LOGIN, user: user)
       token = JwtService.issue(user)
 
       render json: {
@@ -15,6 +16,11 @@ class AuthController < ApplicationController
         }
       }
     else
+      AuditLog.record(
+        action: AuditLog::LOGIN_FAILED, user: user,
+        metadata: { email: params[:email].to_s, reason: user ? "inactive" : "invalid_credentials" }
+      )
+
       render_error :unauthorized, code: :invalid_credentials
     end
   end

@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_021418) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_015821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "audit_logs", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "action", null: false
+    t.string "record_type"
+    t.bigint "record_id"
+    t.jsonb "change_set", default: {}, null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.inet "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.index ["action", "created_at"], name: "index_audit_logs_on_action_and_created_at"
+    t.index ["created_at"], name: "index_audit_logs_on_created_at"
+    t.index ["record_type", "record_id"], name: "index_audit_logs_on_record_type_and_record_id"
+    t.index ["user_id", "created_at"], name: "index_audit_logs_on_user_id_and_created_at"
+  end
 
   create_table "brands", force: :cascade do |t|
     t.citext "name", null: false
