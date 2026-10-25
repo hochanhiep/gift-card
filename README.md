@@ -17,6 +17,7 @@ bin/rails s
 ```sh
 bundle exec rspec
 RAILS_ENV=test bundle exec rake rswag:specs:swaggerize   # regenerate swagger
+bin/bundler-audit check --update
 ```
 
 ## API
