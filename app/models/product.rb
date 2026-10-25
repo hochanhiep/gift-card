@@ -6,7 +6,7 @@ class Product < ApplicationRecord
 
   belongs_to :brand
   has_many :client_products, dependent: :delete_all
-  has_many :cards
+  has_many :cards, dependent: :restrict_with_error
 
   normalizes :name, with: ->(n) { n.strip }
 

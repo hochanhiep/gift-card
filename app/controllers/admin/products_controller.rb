@@ -37,7 +37,7 @@ module Admin
       @product.destroy!
 
       head :no_content
-    rescue ActiveRecord::InvalidForeignKey
+    rescue ActiveRecord::RecordNotDestroyed
       render_error :conflict, code: :product_has_cards
     end
 
