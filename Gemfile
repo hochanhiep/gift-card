@@ -59,6 +59,8 @@ group :development, :test do
 
   gem "rspec-rails"
   gem "rswag-specs"
+
+  gem "bullet"
 end
 
 group :development do

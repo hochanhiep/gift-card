@@ -1,24 +1,24 @@
-# README
+# Gift Card API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+JSON API for a gift card platform.
+Rails 8.1 (API mode), Ruby 3.4, PostgreSQL, Redis, RSpec, JWT.
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+```sh
+cp .env.example .env
+bundle install
+bin/rails db:prepare
+bin/rails s
+```
 
-* System dependencies
+## Tests
 
-* Configuration
+```sh
+bundle exec rspec
+RAILS_ENV=test bundle exec rake rswag:specs:swaggerize   # regenerate swagger
+```
 
-* Database creation
+## API
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Docs: `/api-docs` (Swagger UI).
