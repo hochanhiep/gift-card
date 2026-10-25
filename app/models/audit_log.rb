@@ -1,6 +1,7 @@
 class AuditLog < ApplicationRecord
   LOGIN = "auth.login".freeze
   LOGIN_FAILED = "auth.login_failed".freeze
+  LOGOUT = "auth.logout".freeze
   CLIENT_PRODUCTS_UPDATE = "client_products.update".freeze
   CARD_ISSUE = "card.issue".freeze
   CARD_ISSUE_REFUSED = "card.issue_refused".freeze

@@ -24,4 +24,11 @@ class AuthController < ApplicationController
       render_error :unauthorized, code: :invalid_credentials
     end
   end
+
+  def logout
+    JwtService.revoke(JwtService.decode(bearer_token))
+    AuditLog.record(action: AuditLog::LOGOUT)
+
+    head :no_content
+  end
 end

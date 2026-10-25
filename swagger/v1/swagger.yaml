@@ -772,6 +772,18 @@ paths:
               required:
               - email
               - password
+  "/auth/logout":
+    post:
+      summary: Log out and revoke the token
+      tags:
+      - Auth
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Revokes the token so it cannot be used again
+        '401':
+          description: Rejects the request when the token is missing
   "/client/cards":
     post:
       summary: Issue a card

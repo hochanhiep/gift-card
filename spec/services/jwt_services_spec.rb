@@ -41,4 +41,25 @@ RSpec.describe JwtService do
       expect { described_class.decode("garbage") }.to raise_error(JWT::DecodeError)
     end
   end
+
+  describe ".revoke" do
+    it "rejects the revoked token but not other tokens of the user" do
+      token = described_class.issue(user)
+      other = described_class.issue(user)
+
+      described_class.revoke(described_class.decode(token.value))
+
+      expect { described_class.decode(token.value) }.to raise_error(JWT::InvalidJtiError)
+      expect(described_class.decode(other.value)["sub"]).to eq(user.id)
+    end
+
+    it "keeps the revoked entry only until the token expires" do
+      payload = described_class.decode(described_class.issue(user).value)
+      described_class.revoke(payload)
+
+      travel_to(Time.zone.at(payload["exp"]) + 1.second) do
+        expect(Rails.cache.exist?("revoked_token:#{payload["jti"]}")).to be(false)
+      end
+    end
+  end
 end

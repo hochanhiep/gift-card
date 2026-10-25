@@ -20,10 +20,9 @@ class ApplicationController < ActionController::API
   end
 
   def authenticate_request!
-    token = request.authorization.to_s[/\ABearer (.+)\z/, 1]
-    raise Unauthorized if token.blank?
+    raise Unauthorized if bearer_token.blank?
 
-    payload = JwtService.decode(token)
+    payload = JwtService.decode(bearer_token)
     user    = User.find_by(id: payload["sub"])
 
     raise Unauthorized unless user.present? && user.active?
@@ -33,6 +32,10 @@ class ApplicationController < ActionController::API
 
   def current_user
     Current.user
+  end
+
+  def bearer_token
+    request.authorization.to_s[/\ABearer (.+)\z/, 1]
   end
 
   def require_role!(role)

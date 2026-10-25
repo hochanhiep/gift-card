@@ -61,4 +61,38 @@ RSpec.describe "Auth", type: :request do
       end
     end
   end
+
+  path "/auth/logout" do
+    post "Log out and revoke the token" do
+      tags "Auth"
+      security [ bearerAuth: [] ]
+
+      let(:user)          { create(:user, :client) }
+      let(:token)         { JwtService.issue(user).value }
+      let(:Authorization) { "Bearer #{token}" }
+
+      response "204", "Revokes the token so it cannot be used again" do
+        run_test! do
+          expect(AuditLog.last).to have_attributes(action: AuditLog::LOGOUT, user_id: user.id)
+
+          get "/client/products", headers: { "Authorization" => "Bearer #{token}" }
+
+          expect(response).to have_http_status(:unauthorized)
+          expect(json["errors"].first["code"]).to eq("invalid_token")
+        end
+      end
+
+      response "401", "Rejects the request when the token was already revoked" do
+        before { JwtService.revoke(JwtService.decode(token)) }
+
+        run_test!
+      end
+
+      response "401", "Rejects the request when the token is missing" do
+        let(:Authorization) { nil }
+
+        run_test!
+      end
+    end
+  end
 end
